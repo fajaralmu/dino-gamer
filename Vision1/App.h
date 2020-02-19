@@ -7,6 +7,8 @@
 #include <conio.h>
 #include <Windows.h>
 #include <stdlib.h>
+#include <thread>
+
 class App
 {
 public:
@@ -57,6 +59,8 @@ public:
 	App();
 	~App();
 
+
+	void detect(cv::CascadeClassifier classifier, std::vector<cv::Rect> &object, cv::InputArray image);
 	 
 	void sendInput();
 	int run(); 
