@@ -1,5 +1,7 @@
 #include "App.h"
 #define CASCADE_CACTUS_SINGLE_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_cactus_single/cascade.xml" 
+#define CASCADE_CACTUS_SINGLE_SMALL_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_cactus_small/cascade.xml" 
+
 #define CASCADE_CACTUS_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_cactus/cascade.xml" 
 #define CASCADE_DYNO_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_dyno/cascade.xml"
 
@@ -69,21 +71,27 @@ int App::run()
 
 	 
 	cv::CascadeClassifier cascadeMyDyno;
+	cv::CascadeClassifier cascadeCactus;
+	cv::CascadeClassifier cascadeCactusSingle;
+	cv::CascadeClassifier cascadeCactusSmall;
+
 	if (!cascadeMyDyno.load(CASCADE_DYNO_PATH)) {
-		std::cout << "Error when loading the cascade CASCADE_DYNO_PATH!"
-			<< std::endl;
+		std::cout << "Error when loading the cascade CASCADE_DYNO_PATH!" << std::endl;
 		return -1;
 	}
-	 cv::CascadeClassifier cascadeCactus;
+	 
 	if (!cascadeCactus.load(CASCADE_CACTUS_PATH)) {
-		std::cout << "Error when loading the cascade CASCADE_CACTUS_PATH!"
-			<< std::endl;
+		std::cout << "Error when loading the cascade CASCADE_CACTUS_PATH!" 	<< std::endl;
 		return -1;
 	} 
-	cv::CascadeClassifier cascadeCactusSingle;
+	
 	if (!cascadeCactusSingle.load(CASCADE_CACTUS_SINGLE_PATH)) {
-		std::cout << "Error when loading the cascade CASCADE_CACTUS_PATH!"
-			<< std::endl;
+		std::cout << "Error when loading the cascade CASCADE_CACTUS_PATH!" << std::endl;
+		return -1;
+	}
+
+	if (!cascadeCactusSmall.load(CASCADE_CACTUS_SINGLE_SMALL_PATH)) {
+		std::cout << "Error when loading the cascade CASCADE_CACTUS_SINGLE_SMALL_PATH!" << std::endl;
 		return -1;
 	}
 
@@ -92,6 +100,7 @@ int App::run()
 	std::vector<cv::Rect> MyDynoDetections;
 	std::vector<cv::Rect> cactusDetections;
 	std::vector<cv::Rect> cactusSingleDetections;
+	std::vector<cv::Rect> cactusSmallDetections;
 
 	while (running) {
 
@@ -105,6 +114,7 @@ int App::run()
 		 detect(cascadeMyDyno, MyDynoDetections, mainPicture);
 		 detect(cascadeCactus, cactusDetections, mainPicture);
 		 detect(cascadeCactusSingle, cactusSingleDetections, mainPicture);
+		 detect(cascadeCactusSmall, cactusSmallDetections, mainPicture);
 
 		//if (MyDynoDetections.size() > 0) {
 		//	//sendInput();
@@ -121,6 +131,7 @@ int App::run()
 		 drawDetection(cactusDetections, rgbPicture, "CACTUS-TWIN", cv::Scalar(0, 0, 255));
 		 drawDetection(MyDynoDetections, rgbPicture, "DYNO", cv::Scalar(0, 0, 0));
 		 drawDetection(cactusSingleDetections, rgbPicture, "CACTUS-SINGLE", cv::Scalar(0, 0, 255));
+		 drawDetection(cactusSmallDetections, rgbPicture, "CACTUS-SMALL", cv::Scalar(0, 0, 255));
 
 
 
