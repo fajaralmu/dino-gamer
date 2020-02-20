@@ -23,7 +23,7 @@ public:
 	std::vector<std::vector<cv::Point>> points;
 	int polygonCount = 0;
 	int x = 0, y = 0;
-	
+
 	/*
 	Treshlods
 	*/
@@ -44,26 +44,38 @@ public:
 	const char * ORIGINAL_WINDOW = "Main Window";
 
 	char* trackbar_type = "Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted";
-	char* trackbar_value = "Value"; 
+	char* trackbar_value = "Value";
 
 	//hsv
 	cv::Mat hsvPicture, hsv_out;
 	int hueMin = 109, valMin = 121, satMin = 47;
-	int hueMax = 167, valMax = 250, satMax = 111; 
+	int hueMax = 167, valMax = 250, satMax = 111;
 
 	cv::Mat mainPicture;
 	cv::Mat rgbPicture;
 	bool drawingMode = false;
 	bool running = true;
 
+	cv::CascadeClassifier cascadeMyDyno;
+	cv::CascadeClassifier cascadeCactus;
+	cv::CascadeClassifier cascadeCactusSingle;
+	cv::CascadeClassifier cascadeCactusSmall;
+	cv::CascadeClassifier cascadeCactusTriple;
+
+	std::vector<cv::Rect> MyDynoDetections;
+	std::vector<cv::Rect> cactusDetections;
+	std::vector<cv::Rect> cactusSingleDetections;
+	std::vector<cv::Rect> cactusSmallDetections;
+	std::vector<cv::Rect> cactusTripleDetections;
+
 	App();
 	~App();
 
 
 	void detect(cv::CascadeClassifier classifier, std::vector<cv::Rect> &object, cv::InputArray image);
-	 
+
 	void sendInput();
-	int run(); 
+	int run();
 	int createBg();
 	int drawDetection(std::vector<cv::Rect> detections, cv::Mat pict, cv::String name, cv::Scalar color);
 };

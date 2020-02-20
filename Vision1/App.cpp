@@ -1,9 +1,10 @@
 #include "App.h"
 #define CASCADE_CACTUS_SINGLE_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_cactus_single/cascade.xml" 
 #define CASCADE_CACTUS_SINGLE_SMALL_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_cactus_small/cascade.xml" 
-
+#define CASCADE_ALL_CACTUS_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_all_cactus/cascade.xml" 
 #define CASCADE_CACTUS_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_cactus/cascade.xml" 
 #define CASCADE_DYNO_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_dyno/cascade.xml"
+#define CASCADE_CACTUS_TRIPLE_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_cactus_triple/cascade.xml"
 
 using namespace std;
 
@@ -15,33 +16,34 @@ App::App()
 App::~App()
 {
 }
- 
+
 void App::detect(cv::CascadeClassifier classifier, std::vector<cv::Rect>& object, cv::InputArray image)
 {
 	classifier.detectMultiScale(image, // input image
 		object, // detection results
-		1.1, // scale reduction factor
-		5, // number of required neighbor 	detections
+		1.5, // scale reduction factor
+		3, // number of required neighbor 	detections
 		0, // flags (not used)
-		cv::Size(40, 40), // minimum object size to be detected
-		cv::Size(80, 80));
+		cv::Size(10,10)  // minimum object size to be detected
+	 ,cv::Size(180,180) //max size
+		);
 }
 
-void staticdetect(cv::CascadeClassifier classifier, std::vector<cv::Rect>& object, cv::InputArray image)
+void staticdetect(App * app, cv::CascadeClassifier classifier, std::vector<cv::Rect>& object, cv::InputArray image)
 {
-	classifier.detectMultiScale(image, // input image
-		object, // detection results
-		1.1, // scale reduction factor
-		5, // number of required neighbor 	detections
-		0, // flags (not used)
-		cv::Size(40, 40), // minimum object size to be detected
-		cv::Size(90, 90)); // maximum object size to be detected
+	try {
+		app->detect(classifier, object, image);
+	}
+	catch (exception e) {
+		std::cout << e.what() << std:: endl;
+	}
+	
 }
 
 void App::sendInput()
 {
 	INPUT ip;
-	 
+
 
 	// Set up a generic keyboard event.
 	ip.type = INPUT_KEYBOARD;
@@ -67,24 +69,18 @@ int App::run()
 
 	cv::VideoCapture cap(0);
 
-	//initWindowDialogs(); 
-
-	 
-	cv::CascadeClassifier cascadeMyDyno;
-	cv::CascadeClassifier cascadeCactus;
-	cv::CascadeClassifier cascadeCactusSingle;
-	cv::CascadeClassifier cascadeCactusSmall;
+	//initWindowDialogs();  
 
 	if (!cascadeMyDyno.load(CASCADE_DYNO_PATH)) {
 		std::cout << "Error when loading the cascade CASCADE_DYNO_PATH!" << std::endl;
 		return -1;
 	}
-	 
+
 	if (!cascadeCactus.load(CASCADE_CACTUS_PATH)) {
-		std::cout << "Error when loading the cascade CASCADE_CACTUS_PATH!" 	<< std::endl;
+		std::cout << "Error when loading the cascade CASCADE_CACTUS_PATH!" << std::endl;
 		return -1;
-	} 
-	
+	}
+
 	if (!cascadeCactusSingle.load(CASCADE_CACTUS_SINGLE_PATH)) {
 		std::cout << "Error when loading the cascade CASCADE_CACTUS_PATH!" << std::endl;
 		return -1;
@@ -95,27 +91,35 @@ int App::run()
 		return -1;
 	}
 
+	if (!cascadeCactusTriple.load(CASCADE_CACTUS_TRIPLE_PATH)) {
+		std::cout << "Error when loading the cascade CASCADE_CACTUS_TRIPLE_PATH!" << std::endl;
+		return -1;
+	}
+
 	std::cout << "FILE LOADED" << std::endl;
 
-	std::vector<cv::Rect> MyDynoDetections;
-	std::vector<cv::Rect> cactusDetections;
-	std::vector<cv::Rect> cactusSingleDetections;
-	std::vector<cv::Rect> cactusSmallDetections;
+	cv::setNumThreads(4);
 
 	while (running) {
 
-		cap >> mainPicture;
-		rgbPicture = mainPicture;
+		try {
 
-		/*mirror*/
-		//cv::flip(mainPicture, mainPicture, 2); 
-	 
+			cap >> mainPicture;
+			rgbPicture = mainPicture;
 
-		 detect(cascadeMyDyno, MyDynoDetections, mainPicture);
-		 detect(cascadeCactus, cactusDetections, mainPicture);
-		 detect(cascadeCactusSingle, cactusSingleDetections, mainPicture);
-		 detect(cascadeCactusSmall, cactusSmallDetections, mainPicture);
+			/*mirror*/
+			//cv::flip(mainPicture, mainPicture, 2);  
+ 
+			  this->detect(cascadeMyDyno, MyDynoDetections, mainPicture) ;
+			    this->detect(cascadeCactus, cactusDetections, mainPicture);
+			    this->detect(cascadeCactusSingle, cactusSingleDetections, mainPicture);
+			 this->detect(cascadeCactusSmall, cactusSmallDetections, mainPicture); 
+			   this->detect(cascadeCactusTriple, cactusTripleDetections, mainPicture); 
 
+			/*	std::thread cactus(staticdetect,this, cascadeCactus, cactusDetections, mainPicture);
+				std::thread cactusSingle(staticdetect,this, cascadeCactusSingle, cactusSingleDetections, mainPicture);
+				std::thread cactusSmall(staticdetect ,this, cascadeCactusSmall, cactusSmallDetections, mainPicture);
+		*/
 		//if (MyDynoDetections.size() > 0) {
 		//	//sendInput();
 		//}  
@@ -128,27 +132,34 @@ int App::run()
 		//	//sendInput();
 		//} 
 
-		 drawDetection(cactusDetections, rgbPicture, "CACTUS-TWIN", cv::Scalar(0, 0, 255));
-		 drawDetection(MyDynoDetections, rgbPicture, "DYNO", cv::Scalar(0, 0, 0));
-		 drawDetection(cactusSingleDetections, rgbPicture, "CACTUS-SINGLE", cv::Scalar(0, 0, 255));
-		 drawDetection(cactusSmallDetections, rgbPicture, "CACTUS-SMALL", cv::Scalar(0, 0, 255));
+			drawDetection(cactusDetections, rgbPicture, "CACTUS-TWIN", cv::Scalar(0, 0, 255));
+			drawDetection(MyDynoDetections, rgbPicture, "DYNO", cv::Scalar(255, 0, 0));
+			drawDetection(cactusSingleDetections, rgbPicture, "CACTUS-SINGLE", cv::Scalar(0, 0, 255));
+			drawDetection(cactusSmallDetections, rgbPicture, "CACTUS-SMALL", cv::Scalar(0, 0, 255));
+			drawDetection(cactusTripleDetections, rgbPicture, "CACTUS-TRIPLE", cv::Scalar(0, 0, 255));
 
 
 
-		/*
-			Show Windows...........................................
-		*/
+			/*
+				Show Windows...........................................
+			*/
 
-		imshow(ORIGINAL_WINDOW, rgbPicture);
-		 
+			imshow(ORIGINAL_WINDOW, rgbPicture);
 
-		/*
-		process key input
-		*/
-		cv::waitKey(1);
+
+			/*
+			process key input
+			*/
+			cv::waitKey(1);
+
+		}
+		catch (exception e) {
+			std::cout << e.what() << std::endl;
+		}
 	}
 	/*cv::waitKey(0);*/
 	getchar();
+	std::cout << "end" << std::endl;
 	return 0;
 }
 
@@ -160,7 +171,7 @@ int App::run()
 
 int App::createBg()
 {
-	 
+
 	return 0;
 }
 
@@ -169,13 +180,13 @@ int App::drawDetection(std::vector<cv::Rect> detections, cv::Mat pict, cv::Strin
 	for (int i = 0; i < detections.size(); i++) {
 		cv::Rect detectionRect = detections[i];
 
-		std::string text = name+" - " + std::to_string(detectionRect.x) + "." + std::to_string(detectionRect.y);
+		std::string text = name + " - " + std::to_string(detectionRect.x) + "." + std::to_string(detectionRect.y);
 		text += "|" + std::to_string(detectionRect.width) + "x" + std::to_string(detectionRect.height);
 
 		cv::putText(pict, text, cv::Point(detectionRect.x, detectionRect.y),
-			1, 1.50, color, 2);
+			1, 1.50, color, 1);
 		cv::rectangle(pict, detectionRect,
-			color, 2);
+			color, 1);
 	}
 	return 0;
 }
