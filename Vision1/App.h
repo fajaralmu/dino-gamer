@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include <stdlib.h>
 #include <thread>
+#include "Util.hpp"
 
 class App
 {
@@ -52,7 +53,7 @@ public:
 	int hueMax = 167, valMax = 250, satMax = 111;
 
 	cv::Mat mainPicture;
-	cv::Mat rgbPicture;
+	cv::Mat outPicture;
 	bool drawingMode = false;
 	bool running = true;
 
@@ -61,12 +62,18 @@ public:
 	cv::CascadeClassifier cascadeCactusSingle;
 	cv::CascadeClassifier cascadeCactusSmall;
 	cv::CascadeClassifier cascadeCactusTriple;
+	cv::CascadeClassifier cascadeEnemy;
 
-	std::vector<cv::Rect> MyDynoDetections;
+	std::vector<cv::Rect> dynoDetections;
 	std::vector<cv::Rect> cactusDetections;
 	std::vector<cv::Rect> cactusSingleDetections;
 	std::vector<cv::Rect> cactusSmallDetections;
 	std::vector<cv::Rect> cactusTripleDetections;
+	std::vector<cv::Rect> enemyDetections;
+
+	cv::Rect dynoPoint;
+	cv::Rect enemyPoint;
+	bool dynoDetected = false;
 
 	App();
 	~App();
@@ -74,9 +81,13 @@ public:
 
 	void detect(cv::CascadeClassifier classifier, std::vector<cv::Rect> &object, cv::InputArray image);
 
+	void setDynoPoint();
+	void setNearestEnemyPoint();
+	void drawDistance();
+
 	void sendInput();
 	int run();
 	int createBg();
-	int drawDetection(std::vector<cv::Rect> detections, cv::Mat pict, cv::String name, cv::Scalar color);
+	int drawDetection(std::vector<cv::Rect> detections,  cv::String name, cv::Scalar color);
 };
 

@@ -127,6 +127,7 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Util.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
