@@ -1,10 +1,12 @@
 How to play:
-Requirement
+Requirement:
+
 -Microsoft Visual Studio 2015
 -OpenCV packages
 -WebCam
 
-Usage
+Usage:
+
 -Open Google Chrome and type "chrome://dino"
 -Put the webcam in front of the game screen
 -Run as debug
