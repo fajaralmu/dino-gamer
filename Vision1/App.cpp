@@ -84,7 +84,7 @@ void App::setDynoPoint()
 	try {
 		if (dynoDetections.size() < 1) {
 			//dynoDetected = false;
-			sendInput();
+			//sendInput();
 		}
 		else {
 			dynoDetected = true;
@@ -185,11 +185,11 @@ void App::sendInput()
 	// Press  2 key
 	ip.ki.wVk = 0x20; // virtual-key code for the "SPACE BAR" key
 	ip.ki.dwFlags = 0; // 0 for key press
-	SendInput(1, &ip, sizeof(INPUT));
+	//SendInput(1, &ip, sizeof(INPUT));
 
 	// Release the "A" key
 	ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
-	SendInput(1, &ip, sizeof(INPUT));
+	//SendInput(1, &ip, sizeof(INPUT));
 
 	// Current date/time based on current system
  
