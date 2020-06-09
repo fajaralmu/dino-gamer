@@ -271,28 +271,6 @@ int App::loadFiles() {
 	}
 	return 0;
 }
-
-void detectDino(App * app) {
-	app->detect(&app->cascadeMyDyno, app->dynoDetections, app->mainPicture);
-}
-
-void detectCactus1(App* app) {
-	app->detect(&app->cascadeCactus, app->cactusDetections, app->mainPicture);
-}
-
-
-void detectCactus2(App* app) {
-	app->detect(&app->cascadeCactusSingle, app->cactusSingleDetections, app->mainPicture);
-}
-
-void detectCactus3(App * app) {
-	app->detect(&app->cascadeCactusTriple, app->cactusTripleDetections, app->mainPicture);
-}
-
-void detectEnemy(App * app) {
-	app->detect(&app->cascadeEnemy, app->enemyDetections, app->mainPicture);
-}
-
 void drawDynoDetection(App* app) {
 	app->drawDetection(&app->dynoDetections, "DYNO", cv::Scalar(255, 0, 0));
 }
@@ -312,7 +290,34 @@ void drawCactus3Detection(App * app) {
 void drawEnemyDetection(App * app) {
 	app->drawDetection(&app->enemyDetections, "ENEMY", cv::Scalar(0, 0, 255));
 }
+void detectDino(App * app) {
+	app->detect(&app->cascadeMyDyno, app->dynoDetections, app->mainPicture);
+	app->setDynoPoint();
+	drawDynoDetection(app);
+}
 
+void detectCactus1(App* app) {
+	app->detect(&app->cascadeCactus, app->cactusDetections, app->mainPicture);
+	drawCactus1Detection(app);
+}
+
+
+void detectCactus2(App* app) {
+	app->detect(&app->cascadeCactusSingle, app->cactusSingleDetections, app->mainPicture);
+	drawCactus2Detection(app);
+}
+
+void detectCactus3(App * app) {
+	app->detect(&app->cascadeCactusTriple, app->cactusTripleDetections, app->mainPicture);
+	drawCactus3Detection(app);
+}
+
+void detectEnemy(App * app) {
+	app->detect(&app->cascadeEnemy, app->enemyDetections, app->mainPicture);
+	drawEnemyDetection(app);
+}
+
+ 
 int App::run()
 {
 	points.push_back({});
@@ -346,39 +351,31 @@ int App::run()
 			std::thread thread3(detectCactus2, this);
 			std::thread thread4(detectCactus3, this);
 			std::thread thread5(detectEnemy, this);
-			//this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
-			/*this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
-			this->detect(&cascadeCactus, cactusDetections, mainPicture);
-			this->detect(&cascadeCactusSingle, cactusSingleDetections, mainPicture);
-			this->detect(&cascadeCactusTriple, cactusTripleDetections, mainPicture);
-			this->detect(&cascadeEnemy, enemyDetections, mainPicture);*/
+			
 			thread1.join();
 			thread2.join();
 			thread3.join();
 			thread4.join();
-			thread5.join();
-
-
-
-			setDynoPoint();
+			thread5.join(); 
+			
 			setNearestEnemyPoint();
 			drawDistance();
 
-			std::thread thread6(drawDynoDetection, this);
-			std::thread thread7(drawCactus1Detection, this);
-			std::thread thread8(drawCactus2Detection, this);
-			std::thread thread9(drawCactus3Detection, this);
-			std::thread thread10(drawEnemyDetection, this);
-			//drawDetection(&dynoDetections, "DYNO", cv::Scalar(255, 0, 0));
-			/*drawDetection(&cactusDetections, "CACTUS-TWIN", cv::Scalar(0, 0, 255));
-			drawDetection(&cactusSingleDetections, "CACTUS-SINGLE", cv::Scalar(0, 0, 255));
-			drawDetection(&cactusTripleDetections, "CACTUS-TRIPLE", cv::Scalar(0, 0, 255));
-			drawDetection(&enemyDetections, "ENEMY", cv::Scalar(0, 0, 255));*/
-			thread6.join();
-			thread7.join();
-			thread8.join();
-			thread9.join();
-			thread10.join();
+			//std::thread thread6(drawDynoDetection, this);
+			//std::thread thread7(drawCactus1Detection, this);
+			//std::thread thread8(drawCactus2Detection, this);
+			//std::thread thread9(drawCactus3Detection, this);
+			//std::thread thread10(drawEnemyDetection, this);
+			////drawDetection(&dynoDetections, "DYNO", cv::Scalar(255, 0, 0));
+			///*drawDetection(&cactusDetections, "CACTUS-TWIN", cv::Scalar(0, 0, 255));
+			//drawDetection(&cactusSingleDetections, "CACTUS-SINGLE", cv::Scalar(0, 0, 255));
+			//drawDetection(&cactusTripleDetections, "CACTUS-TRIPLE", cv::Scalar(0, 0, 255));
+			//drawDetection(&enemyDetections, "ENEMY", cv::Scalar(0, 0, 255));*/
+			//thread6.join();
+			//thread7.join();
+			//thread8.join();
+			//thread9.join();
+			//thread10.join();
 
 			/*
 				Show Windows...........................................
