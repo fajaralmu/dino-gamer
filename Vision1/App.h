@@ -79,7 +79,7 @@ public:
 	~App();
 
 
-	void detect(cv::CascadeClassifier  classifier, std::vector<cv::Rect> &object, cv::InputArray image);
+	void detect(cv::CascadeClassifier  * classifier, std::vector<cv::Rect> &object, cv::InputArray image);
 	void detection(cv::CascadeClassifier classifier, std::vector<cv::Rect> &object, cv::InputArray image);
 
 	void setDynoPoint();
@@ -90,6 +90,6 @@ public:
 	int loadFiles();
 	int run();
 	int createBg();
-	int drawDetection(std::vector<cv::Rect> * detections,  cv::String name, cv::Scalar color);
+	int drawDetection(std::vector<cv::Rect> * detections, cv::String name, cv::Scalar color);
 };
 

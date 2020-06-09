@@ -79,10 +79,10 @@ App::~App()
 {
 }
 
-void App::detect(cv::CascadeClassifier  classifier, std::vector<cv::Rect> &object, cv::InputArray image)
+void App::detect(cv::CascadeClassifier * classifier, std::vector<cv::Rect> &object, cv::InputArray image)
 {
 	try {
-		classifier.detectMultiScale(image, // input image
+		classifier->detectMultiScale(image, // input image
 			object, // detection results
 			1.5, // scale reduction factor
 			3, // number of required neighbor 	detections
@@ -181,6 +181,8 @@ void App::drawDistance()
 	cv::line(outPicture, cv::Point(enemyPointX, dynoPoint.y), cv::Point(enemyPointX, enemyPoint.y), cv::Scalar(0, 0, 0), 1);
 	cv::putText(outPicture, std::to_string(difference), cv::Point(middlePointX, dynoPoint.y), 1, 2, cv::Scalar(0, 0, 0), 2);
 
+	cout << "difference: " << difference << endl;
+
 	if (difference > 0 && difference < 300) {
 		sendInput();
 	}
@@ -212,7 +214,7 @@ void App::sendInput()
 	// Press  2 key
 	input.ki.wVk = 0x20; // virtual-key code for the "SPACE BAR" key
 	input.ki.dwFlags = 0; // 0 for key press
-	//SendInput(1, &ip, sizeof(INPUT));
+	SendInput(1, &input, sizeof(INPUT));
 
 	// Release the "A" key
 	input.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
@@ -287,12 +289,12 @@ int App::run()
 			std::thread thread4(&App::detect, cascadeCactusSingle, cactusSingleDetections, mainPicture);
 			std::thread thread5(&App::detect, cascadeCactusTriple, cactusTripleDetections, mainPicture);
 			std::thread thread6(&App::detect, cascadeEnemy, enemyDetections, mainPicture);*/
-			this->detect(cascadeMyDyno, dynoDetections, mainPicture);
-			this->detect(cascadeMyDyno, dynoDetections, mainPicture);
-			this->detect(cascadeCactus, cactusDetections, mainPicture);
-			this->detect(cascadeCactusSingle, cactusSingleDetections, mainPicture);
-			this->detect(cascadeCactusTriple, cactusTripleDetections, mainPicture);
-			this->detect(cascadeEnemy, enemyDetections, mainPicture);
+			this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
+			this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
+			this->detect(&cascadeCactus, cactusDetections, mainPicture);
+			this->detect(&cascadeCactusSingle, cactusSingleDetections, mainPicture);
+			this->detect(&cascadeCactusTriple, cactusTripleDetections, mainPicture);
+			this->detect(&cascadeEnemy, enemyDetections, mainPicture);
 			/*thread1.join();
 			thread2.join();
 			thread3.join();
