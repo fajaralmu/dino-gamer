@@ -11,6 +11,17 @@
 #define ENEMY_DISTANCE_FROM_PLAYER 250
 
 using namespace std;
+int spacePressCount = 0;
+long lastSpaceBarPress = 0;
+
+#include <chrono>
+#include <cstdint>
+#include <iostream>
+
+uint64_t timeSinceEpochMillisec() {
+	using namespace std::chrono;
+	return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
 
 bool isEmpty(cv::Rect rect) {
 
@@ -191,19 +202,25 @@ void App::drawDistance()
 		return;
 	}
 	if (isEmpty(enemyPoint)) {
-		 return;
+		return;
 	}
-	
+
 	thread t1(checkAndSendInput, this);
 	thread t2(drawEnemyDistance, this);
 	t1.join();
 	t2.join();
-	 
-} 
+
+}
 void App::sendInput()
 {
-	INPUT input; 
 
+	long currentTime = time(0);
+	long delta = currentTime - lastSpaceBarPress;
+
+	 
+	cout << "currentTime" << currentTime << " - lastSpaceBarPress " << lastSpaceBarPress << ", delta: " << delta << endl;
+	 
+	INPUT input;
 	// Set up a generic keyboard event.
 	input.type = INPUT_KEYBOARD;
 	input.ki.wScan = 0; // hardware scan code for key
@@ -220,8 +237,9 @@ void App::sendInput()
 	//SendInput(1, &ip, sizeof(INPUT));
 
 	// Current date/time based on current system
-
-	cout << time(0) << "SPACE BAR PRESSED" << endl;
+	spacePressCount++;
+	lastSpaceBarPress = currentTime;
+	cout << currentTime << "SPACE BAR PRESSED" << spacePressCount << endl;
 
 }
 
@@ -258,17 +276,17 @@ void detectDino(App * app) {
 	app->detect(&app->cascadeMyDyno, app->dynoDetections, app->mainPicture);
 }
 
-void detectCactus1(App* app) { 
-	app->detect(&app->cascadeCactus, app->cactusDetections, app->mainPicture); 
+void detectCactus1(App* app) {
+	app->detect(&app->cascadeCactus, app->cactusDetections, app->mainPicture);
 }
 
 
 void detectCactus2(App* app) {
-	app->detect(&app->cascadeCactusSingle, app->cactusSingleDetections, app->mainPicture); 
+	app->detect(&app->cascadeCactusSingle, app->cactusSingleDetections, app->mainPicture);
 }
 
 void detectCactus3(App * app) {
-	app->detect(&app->cascadeCactusTriple, app->cactusTripleDetections, app->mainPicture); 
+	app->detect(&app->cascadeCactusTriple, app->cactusTripleDetections, app->mainPicture);
 }
 
 void detectEnemy(App * app) {
@@ -280,14 +298,14 @@ void drawDynoDetection(App* app) {
 }
 
 void drawCactus1Detection(App * app) {
-	app->drawDetection(&app->cactusDetections, "CACTUS-TWIN", cv::Scalar(0, 0, 255));  
+	app->drawDetection(&app->cactusDetections, "CACTUS-TWIN", cv::Scalar(0, 0, 255));
 }
 
 void drawCactus2Detection(App * app) {
 	app->drawDetection(&app->cactusSingleDetections, "CACTUS-SINGLE", cv::Scalar(0, 0, 255));
 }
 
-void drawCactus3Detection(App * app) { 
+void drawCactus3Detection(App * app) {
 	app->drawDetection(&app->cactusTripleDetections, "CACTUS-TRIPLE", cv::Scalar(0, 0, 255));
 }
 
@@ -323,24 +341,24 @@ int App::run()
 
 			/*mirror*/
 			//cv::flip(mainPicture, mainPicture, 2);    
-			std::thread thread1(detectDino,this);
+			std::thread thread1(detectDino, this);
 			std::thread thread2(detectCactus1, this);
 			std::thread thread3(detectCactus2, this);
 			std::thread thread4(detectCactus3, this);
-			std::thread thread5(detectEnemy, this); 
+			std::thread thread5(detectEnemy, this);
 			//this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
 			/*this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
 			this->detect(&cascadeCactus, cactusDetections, mainPicture);
 			this->detect(&cascadeCactusSingle, cactusSingleDetections, mainPicture);
 			this->detect(&cascadeCactusTriple, cactusTripleDetections, mainPicture);
 			this->detect(&cascadeEnemy, enemyDetections, mainPicture);*/
-			 thread1.join();
+			thread1.join();
 			thread2.join();
 			thread3.join();
 			thread4.join();
 			thread5.join();
-			 
-			 
+
+
 
 			setDynoPoint();
 			setNearestEnemyPoint();
