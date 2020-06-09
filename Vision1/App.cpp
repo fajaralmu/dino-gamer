@@ -8,6 +8,7 @@
 #define CASCADE_DYNO_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_dyno/cascade.xml"
 #define CASCADE_CACTUS_TRIPLE_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_cactus_triple/cascade.xml"
 #define CASCADE_ENEMY_PATH   "D:/Development/Visual Studio 2015 Computer Vision/Vision - Dyno Gamer/Vision1/classifier/classifier_enemy/cascade.xml"
+#define ENEMY_DISTANCE_FROM_PLAYER 250
 
 using namespace std;
 
@@ -161,49 +162,47 @@ void App::setNearestEnemyPoint()
 
 }
 
+void drawEnemyDistance(App * app) {
+	int enemyPointX = app->enemyPoint.x + app->enemyPoint.width / 2;
+	int dynoPointX = app->dynoPoint.x + app->dynoPoint.width / 2;
+	int difference = enemyPointX - dynoPointX;
+	int middlePointX = dynoPointX + difference / 2;
+	cv::Point dyno = cv::Point(dynoPointX, app->dynoPoint.y);
+	cv::Point enemy = cv::Point(enemyPointX, app->dynoPoint.y);
+	cv::line(app->outPicture, dyno, enemy, cv::Scalar(10, 200, 0), 2);
+	cv::line(app->outPicture, cv::Point(enemyPointX, app->dynoPoint.y), cv::Point(enemyPointX, app->enemyPoint.y), cv::Scalar(0, 0, 0), 1);
+	cv::putText(app->outPicture, std::to_string(difference), cv::Point(middlePointX, app->dynoPoint.y), 1, 2, cv::Scalar(0, 0, 0), 2);
+}
+
+void checkAndSendInput(App *app) {
+	int enemyPointX = app->enemyPoint.x + app->enemyPoint.width / 2;
+	int dynoPointX = app->dynoPoint.x + app->dynoPoint.width / 2;
+	int difference = enemyPointX - dynoPointX;
+	int middlePointX = dynoPointX + difference / 2;
+
+	if (difference > 0 && difference < ENEMY_DISTANCE_FROM_PLAYER) {
+		app->sendInput();
+	}
+}
+
 void App::drawDistance()
 {
 	if (dynoDetected == false) {
 		return;
 	}
 	if (isEmpty(enemyPoint)) {
-		return;
+		 return;
 	}
-	int enemyPointX = enemyPoint.x + enemyPoint.width / 2;
-	int dynoPointX = dynoPoint.x + dynoPoint.width / 2;
-	int difference = enemyPointX - dynoPointX;
-	int middlePointX = dynoPointX + difference / 2;
-
-	cv::Point dyno = cv::Point(dynoPointX, dynoPoint.y);
-	cv::Point enemy = cv::Point(enemyPointX, dynoPoint.y);
-
-	cv::line(outPicture, dyno, enemy, cv::Scalar(10, 200, 0), 2);
-	cv::line(outPicture, cv::Point(enemyPointX, dynoPoint.y), cv::Point(enemyPointX, enemyPoint.y), cv::Scalar(0, 0, 0), 1);
-	cv::putText(outPicture, std::to_string(difference), cv::Point(middlePointX, dynoPoint.y), 1, 2, cv::Scalar(0, 0, 0), 2);
-
-	cout << "difference: " << difference << endl;
-
-	if (difference > 0 && difference < 300) {
-		sendInput();
-	}
-
-}
-
-void static detect(App * app, cv::CascadeClassifier * classifier, std::vector<cv::Rect>& object, cv::InputArray image)
-{
-	try {
-		//app->detect(classifier, object, image);
-	}
-	catch (exception e) {
-		std::cout << e.what() << std::endl;
-	}
-
-}
-
+	
+	thread t1(checkAndSendInput, this);
+	thread t2(drawEnemyDistance, this);
+	t1.join();
+	t2.join();
+	 
+} 
 void App::sendInput()
 {
-	INPUT input;
-
+	INPUT input; 
 
 	// Set up a generic keyboard event.
 	input.type = INPUT_KEYBOARD;
@@ -276,6 +275,26 @@ void detectEnemy(App * app) {
 	app->detect(&app->cascadeEnemy, app->enemyDetections, app->mainPicture);
 }
 
+void drawDynoDetection(App* app) {
+	app->drawDetection(&app->dynoDetections, "DYNO", cv::Scalar(255, 0, 0));
+}
+
+void drawCactus1Detection(App * app) {
+	app->drawDetection(&app->cactusDetections, "CACTUS-TWIN", cv::Scalar(0, 0, 255));  
+}
+
+void drawCactus2Detection(App * app) {
+	app->drawDetection(&app->cactusSingleDetections, "CACTUS-SINGLE", cv::Scalar(0, 0, 255));
+}
+
+void drawCactus3Detection(App * app) { 
+	app->drawDetection(&app->cactusTripleDetections, "CACTUS-TRIPLE", cv::Scalar(0, 0, 255));
+}
+
+void drawEnemyDetection(App * app) {
+	app->drawDetection(&app->enemyDetections, "ENEMY", cv::Scalar(0, 0, 255));
+}
+
 int App::run()
 {
 	points.push_back({});
@@ -303,13 +322,7 @@ int App::run()
 			outPicture = mainPicture;
 
 			/*mirror*/
-			//cv::flip(mainPicture, mainPicture, 2);  
-			/*std::thread thread1(&App::detect, cascadeMyDyno, dynoDetections, mainPicture);
-			std::thread thread2(&App::detect, cascadeMyDyno, dynoDetections, mainPicture);
-			std::thread thread3(&App::detect, cascadeCactus, cactusDetections, mainPicture);
-			std::thread thread4(&App::detect, cascadeCactusSingle, cactusSingleDetections, mainPicture);
-			std::thread thread5(&App::detect, cascadeCactusTriple, cactusTripleDetections, mainPicture);
-			std::thread thread6(&App::detect, cascadeEnemy, enemyDetections, mainPicture);*/
+			//cv::flip(mainPicture, mainPicture, 2);    
 			std::thread thread1(detectDino,this);
 			std::thread thread2(detectCactus1, this);
 			std::thread thread3(detectCactus2, this);
@@ -333,12 +346,21 @@ int App::run()
 			setNearestEnemyPoint();
 			drawDistance();
 
-			drawDetection(&cactusDetections, "CACTUS-TWIN", cv::Scalar(0, 0, 255));
-			drawDetection(&dynoDetections, "DYNO", cv::Scalar(255, 0, 0));
+			std::thread thread6(drawDynoDetection, this);
+			std::thread thread7(drawCactus1Detection, this);
+			std::thread thread8(drawCactus2Detection, this);
+			std::thread thread9(drawCactus3Detection, this);
+			std::thread thread10(drawEnemyDetection, this);
+			//drawDetection(&dynoDetections, "DYNO", cv::Scalar(255, 0, 0));
+			/*drawDetection(&cactusDetections, "CACTUS-TWIN", cv::Scalar(0, 0, 255));
 			drawDetection(&cactusSingleDetections, "CACTUS-SINGLE", cv::Scalar(0, 0, 255));
 			drawDetection(&cactusTripleDetections, "CACTUS-TRIPLE", cv::Scalar(0, 0, 255));
-			drawDetection(&enemyDetections, "ENEMY", cv::Scalar(0, 0, 255));
-
+			drawDetection(&enemyDetections, "ENEMY", cv::Scalar(0, 0, 255));*/
+			thread6.join();
+			thread7.join();
+			thread8.join();
+			thread9.join();
+			thread10.join();
 
 			/*
 				Show Windows...........................................
