@@ -21,8 +21,10 @@ requirement:
 
 step:
 
-1. create sample
+1. go to opencvHomeDirectory\bin\Debug and open command line
+
+2. command to create sample
 ./opencv_createsamplesd -info  "directory\to\positives\files\pos.txt " -vec "directory\to\positives\files\output\pos.vec" -w "24 -h 24 -num 23
 
-2. train data
+3. command to train data
 ./opencv_traincascaded -data classifier -vec "directory\to\positives\files\output\pos.vec" -bg "directory\to\positives\files\neg.txt" -numPos 18 -numNeg 30 -numStages 20 -minHitRate 0.95 -maxFalseAlarmRate 0.5 -w 24 -h 24
