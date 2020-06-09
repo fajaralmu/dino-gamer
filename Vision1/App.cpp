@@ -227,14 +227,14 @@ void App::sendInput()
 	input.ki.time = 0;
 	input.ki.dwExtraInfo = 0;
 
-	// Press  2 key
+	// Press SPACE BAR key
 	input.ki.wVk = 0x20; // virtual-key code for the "SPACE BAR" key
 	input.ki.dwFlags = 0; // 0 for key press
 	SendInput(1, &input, sizeof(INPUT));
 
-	// Release the "A" key
+	// Release the SPACE BAR key
 	input.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
-	//SendInput(1, &ip, sizeof(INPUT));
+	SendInput(1, &input, sizeof(INPUT));
 
 	// Current date/time based on current system
 	spacePressCount++;
