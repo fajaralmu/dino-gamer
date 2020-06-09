@@ -255,6 +255,27 @@ int App::loadFiles() {
 	return 0;
 }
 
+void detectDino(App * app) {
+	app->detect(&app->cascadeMyDyno, app->dynoDetections, app->mainPicture);
+}
+
+void detectCactus1(App* app) { 
+	app->detect(&app->cascadeCactus, app->cactusDetections, app->mainPicture); 
+}
+
+
+void detectCactus2(App* app) {
+	app->detect(&app->cascadeCactusSingle, app->cactusSingleDetections, app->mainPicture); 
+}
+
+void detectCactus3(App * app) {
+	app->detect(&app->cascadeCactusTriple, app->cactusTripleDetections, app->mainPicture); 
+}
+
+void detectEnemy(App * app) {
+	app->detect(&app->cascadeEnemy, app->enemyDetections, app->mainPicture);
+}
+
 int App::run()
 {
 	points.push_back({});
@@ -289,18 +310,24 @@ int App::run()
 			std::thread thread4(&App::detect, cascadeCactusSingle, cactusSingleDetections, mainPicture);
 			std::thread thread5(&App::detect, cascadeCactusTriple, cactusTripleDetections, mainPicture);
 			std::thread thread6(&App::detect, cascadeEnemy, enemyDetections, mainPicture);*/
-			this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
-			this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
+			std::thread thread1(detectDino,this);
+			std::thread thread2(detectCactus1, this);
+			std::thread thread3(detectCactus2, this);
+			std::thread thread4(detectCactus3, this);
+			std::thread thread5(detectEnemy, this); 
+			//this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
+			/*this->detect(&cascadeMyDyno, dynoDetections, mainPicture);
 			this->detect(&cascadeCactus, cactusDetections, mainPicture);
 			this->detect(&cascadeCactusSingle, cactusSingleDetections, mainPicture);
 			this->detect(&cascadeCactusTriple, cactusTripleDetections, mainPicture);
-			this->detect(&cascadeEnemy, enemyDetections, mainPicture);
-			/*thread1.join();
+			this->detect(&cascadeEnemy, enemyDetections, mainPicture);*/
+			 thread1.join();
 			thread2.join();
 			thread3.join();
 			thread4.join();
 			thread5.join();
-			thread6.join();*/
+			 
+			 
 
 			setDynoPoint();
 			setNearestEnemyPoint();
