@@ -1,5 +1,5 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (CascadeClassifier1.vcxproj, Vision1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   App.cpp
-d:\development\visual studio 2015 computer vision\vision - dyno gamer\vision1\app.cpp(217): warning C4244: 'initializing': conversion from 'time_t' to 'long', possible loss of data
+d:\development\visual studio 2015 computer vision\vision - dyno gamer\vision1\app.cpp(223): warning C4244: 'initializing': conversion from 'time_t' to 'long', possible loss of data
   Vision1.vcxproj -> D:\Development\Visual Studio 2015 Computer Vision\Vision - Dyno Gamer\x64\Debug\DynoGamer.exe
   Vision1.vcxproj -> D:\Development\Visual Studio 2015 Computer Vision\Vision - Dyno Gamer\x64\Debug\DynoGamer.pdb (Partial PDB)

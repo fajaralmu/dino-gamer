@@ -94,9 +94,15 @@ App::~App()
 void App::detect(cv::CascadeClassifier * classifier, std::vector<cv::Rect> &object, cv::InputArray image)
 {
 	try {
+		double scaleFactor = 2;
+		
+		if ( classifier ==  &this->cascadeCactusTriple ) {
+			scaleFactor = 1.3;
+		}
+
 		classifier->detectMultiScale(image, // input image
 			object, // detection results
-			1.5, // scale reduction factor
+			scaleFactor, // scale reduction factor
 			3, // number of required neighbor 	detections
 			0, // flags (not used)
 			cv::Size(30, 30)  // minimum object size to be detected
@@ -343,6 +349,9 @@ int App::run()
 
 			cap >> mainPicture;
 			outPicture = mainPicture;
+			/*cv::cvtColor(outPicture, outPicture, CV_BGR2GRAY);
+			cv::GaussianBlur(outPicture, outPicture, cv::Size(7, 7), 1.5, 1.5);
+			cv::threshold(outPicture, outPicture, 100, 255, CV_THRESH_BINARY);*/
 
 			/*mirror*/
 			//cv::flip(mainPicture, mainPicture, 2);    
