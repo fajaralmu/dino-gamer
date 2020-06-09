@@ -103,7 +103,7 @@ void App::detect(cv::CascadeClassifier * classifier, std::vector<cv::Rect> &obje
 		classifier->detectMultiScale(image, // input image
 			object, // detection results
 			scaleFactor, // scale reduction factor
-			3, // number of required neighbor 	detections
+			1, // number of required neighbor 	detections
 			0, // flags (not used)
 			cv::Size(30, 30)  // minimum object size to be detected
 			, cv::Size(180, 180) //max size
