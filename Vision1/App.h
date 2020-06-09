@@ -64,12 +64,12 @@ public:
 	cv::CascadeClassifier cascadeCactusTriple;
 	cv::CascadeClassifier cascadeEnemy;
 
-	std::vector<cv::Rect> dynoDetections;
-	std::vector<cv::Rect> cactusDetections;
-	std::vector<cv::Rect> cactusSingleDetections;
-	std::vector<cv::Rect> cactusSmallDetections;
-	std::vector<cv::Rect> cactusTripleDetections;
-	std::vector<cv::Rect> enemyDetections;
+	std::vector<cv::Rect>  dynoDetections;
+	std::vector<cv::Rect>  cactusDetections;
+	std::vector<cv::Rect>  cactusSingleDetections;
+	std::vector<cv::Rect>  cactusSmallDetections;
+	std::vector<cv::Rect>  cactusTripleDetections;
+	std::vector<cv::Rect>  enemyDetections;
 
 	cv::Rect dynoPoint;
 	cv::Rect enemyPoint;
@@ -79,15 +79,17 @@ public:
 	~App();
 
 
-	void detect(cv::CascadeClassifier classifier, std::vector<cv::Rect> &object, cv::InputArray image);
+	void detect(cv::CascadeClassifier  classifier, std::vector<cv::Rect> &object, cv::InputArray image);
+	void detection(cv::CascadeClassifier classifier, std::vector<cv::Rect> &object, cv::InputArray image);
 
 	void setDynoPoint();
 	void setNearestEnemyPoint();
 	void drawDistance();
 
 	void sendInput();
+	int loadFiles();
 	int run();
 	int createBg();
-	int drawDetection(std::vector<cv::Rect> detections,  cv::String name, cv::Scalar color);
+	int drawDetection(std::vector<cv::Rect> * detections,  cv::String name, cv::Scalar color);
 };
 
